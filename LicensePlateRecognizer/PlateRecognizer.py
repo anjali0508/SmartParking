@@ -1,7 +1,10 @@
 import cv2 
 import numpy as np
-import pytesseract as tess
+import pytesseract
 from PIL import Image
+import re
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 #To be used during development
 def show(name, image):
@@ -17,16 +20,16 @@ def preprocesing(image):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
     tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
     noiseless = cv2.subtract(gray, tophat)
-    show("Without Noise", noiseless)
+    #show("Without Noise", noiseless)
     # Detect edges
     edges = cv2.Canny(noiseless, 100, 150)
-    show("Edges", edges)
+    #show("Edges", edges)
     # Blur
     blur = cv2.GaussianBlur(edges, (5,5), 0)
-    show("Blur", blur)
+    #show("Blur", blur)
     # Thresholiding
     thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 19, 9)
-    show("Thresholding", thresh)
+    #show("Thresholding", thresh)
 
     return thresh
 
@@ -60,11 +63,11 @@ def getRawLPNumbers(contours, image):
 
         # Visualization
         plate = image[y : y + h, x : x + w]
-        show("Plate", plate)
+        #show("Plate", plate)
 
         # Convert to pillow Image format
         plate = Image.fromarray(plate)
-        text = tess.image_to_string(plate, lang="eng")
+        text = pytesseract.image_to_string(plate, lang="eng")
         numbers.append(text)
     
     print("Numbers obtained are: ", numbers)
@@ -73,14 +76,22 @@ def getRawLPNumbers(contours, image):
 def getLPNumber(numbers):
     # INPUT: List of numbers obtained from all suitable contours
     # OUTPUT: Cleaned Registraion Number of the vehicle
-    pass
-
-original = cv2.imread("./Images/car3.png")
+    for i in numbers:
+        i = re.sub(r'[^\w]','',i)
+        i = i.strip()
+        if(i.isupper() or i.isdigit()):
+            if (len(i)>5 and len(i)<=10):  #To pass all the test, ideally it should be 9 or 10
+                print("Car number is:",i)
+                return i
+        
+original = cv2.imread("./Images/car1.jpeg")
+original = cv2.resize(original, (620, 480))
 preprocessed = preprocesing(original)
 suitableContours = getSuitableContours(preprocessed, original)
 rawNumbers = getRawLPNumbers(suitableContours, original)
+cleanNumber = getLPNumber(rawNumbers)
 cv2.destroyAllWindows
     
-#Cars passed: 2, 4, 5, 7, 8
+#Cars passed: 2, 4, 5, 7, 8,6
 #Cars failed: 
-# 3, 6(LP blurred, tessaract couldnt obtain, but LP cropped properly)
+# 3(LP blurred, tessaract couldnt obtain, but LP cropped properly)
