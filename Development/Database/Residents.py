@@ -38,6 +38,7 @@ class Residents:
         allResidents = firebase.get("/", "Residents")
         for resident in allResidents:
             print(resident)
+        return allResidents
 
 
 if __name__ == "__main__":

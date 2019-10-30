@@ -6,45 +6,43 @@ firebase = firebase.FirebaseApplication(
 id = IDGenerator.ID()
 
 
-class Resident:
-    def __init__(self, flatNo, name, email="", phoneNo="", password=""):
+class ResidentVehicle:
+    def __init__(self, flatNo, vehicleNo, allottedSlot):
         self.flatNo = flatNo
-        self.name = name
-        self.email = email
-        self.phoneNo = phoneNo
-        self.password = password
+        self.vehicleNo = vehicleNo
+        self.allottedSlot = allottedSlot
 
     def getJSONRep(self):
         json = {}
         json["FlatNo"] = self.flatNo
-        json["Name"] = self.name
-        json["Email"] = self.email
-        json["PhoneNo"] = self.phoneNo
-        json["Password"] = self.password
+        json["VehicleNo"] = self.vehicleNo
+        json["AllottedSlot"] = self.allottedSlot
         return json
 
 
-class Residents:
+class ResidentVehicles:
     def __init__(self):
         pass
 
-    def insert(self, resident):
-        residentID = id.getNextResidentID()
-        data = resident.getJSONRep()
-        firebase.put("Residents", residentID, data)
+    def insert(self, vehicle):
+        vehicleID = id.getNextResidentVehicleID()
+        data = vehicle.getJSONRep()
+        firebase.put("ResidentVehicles", vehicleID, data)
         print("Inserted into database")
 
     def getAll(self):
-        allResidents = firebase.get("/", "Residents")
-        for resident in allResidents:
-            print(resident)
+        allVehicles = firebase.get("/", "ResidentVehicles")
+        for vehicle in allVehicles:
+            print(vehicle)
+        return allVehicles
 
 
 if __name__ == "__main__":
-    resident = Resident(101, "Ananya")
-    residents = Residents()
-    residents.insert(resident)
-    residents.getAll()
-    resident = Resident(102, "Haha")
-    residents.insert(resident)
-    residents.getAll()
+    residentVehicles = ResidentVehicles()
+    vehicle = ResidentVehicle("101", "KA05P9090", "R1")
+    residentVehicles.insert(vehicle)
+    vehicle = ResidentVehicle("102", "KA09A1111", "R2")
+    residentVehicles.insert(vehicle)
+    vehicle = ResidentVehicle("101", "KA10D1212", "R3")
+    residentVehicles.insert(vehicle)
+    residentVehicles.getAll()
