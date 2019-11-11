@@ -83,14 +83,16 @@ def getLPNumber(numbers):
             if (len(i)>5 and len(i)<=10):  #To pass all the test, ideally it should be 9 or 10
                 print("Car number is:",i)
                 return i
-        
-original = cv2.imread("./Images/car1.jpeg")
-original = cv2.resize(original, (620, 480))
-preprocessed = preprocesing(original)
-suitableContours = getSuitableContours(preprocessed, original)
-rawNumbers = getRawLPNumbers(suitableContours, original)
-cleanNumber = getLPNumber(rawNumbers)
-cv2.destroyAllWindows
+
+def extractLPN(imageName):   
+    original = cv2.imread(imageName)
+    # original = cv2.resize(original, (620, 480))
+    preprocessed = preprocesing(original)
+    suitableContours = getSuitableContours(preprocessed, original)
+    rawNumbers = getRawLPNumbers(suitableContours, original)
+    cleanNumber = getLPNumber(rawNumbers)
+    cv2.destroyAllWindows
+    return cleanNumber
     
 #Cars passed: 2, 4, 5, 7, 8,6
 #Cars failed: 
