@@ -65,7 +65,7 @@ def verifyAndAllotVisitor(licensePlateNumber):
 
 
 if __name__ == "__main__":
-    # print(verifyResident("KA09A1111"))
+    print(verifyResident("KA09A1111"))
     # print(verifyResident("KA09A1122"))
     # print(verifyAndAllotVisitor(("KA09A2212")))
     # print(verifyAndAllotVisitor(("KA05P9999")))
