@@ -5,10 +5,23 @@ GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
 
 
 def operateLED(LEDPin):
-    # Since we do not use an actual camerap for this prototype, we replicate its operation using an led
+    # Since we do not use an actual camera for this prototype, we replicate its operation using an led
     GPIO.output(LEDPin, GPIO.HIGH)
     sleep(1)
     GPIO.output(LEDPin, GPIO.LOW)
+
+def setGrid(rowPins, colPins):
+    # Set the led pins to opposite polarity, so that they are OFF initially
+    for rowPin in rowPins:
+        GPIO.output(rowPin, GPIO.LOW)
+    for colPin in colPins:
+        GPIO.output(colPin, GPIO.HIGH)
+
+def showPath(slot, rowPins, colPins):
+    section, row, col = slot[0], slot[1], slot[2]
+    GPIO.output(rowPins[row], GPIO.HIGH)
+    for i in range(col + 1):
+        GPIO.output(colPins[i], GPIO.HIGH)
 
 def operateMotor(servoPIN):
     GPIO.setup(servoPIN, GPIO.OUT)
