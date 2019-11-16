@@ -7,7 +7,7 @@ GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
 def operateLED(LEDPin):
     # Since we do not use an actual camera for this prototype, we replicate its operation using an led
     GPIO.output(LEDPin, GPIO.HIGH)
-    sleep(1)
+    time.sleep(1)
     GPIO.output(LEDPin, GPIO.LOW)
 
 def setGrid(rowPins, colPins):
