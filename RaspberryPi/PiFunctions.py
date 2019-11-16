@@ -1,6 +1,6 @@
-import RPi.GPIO as GPIO 
-from time import sleep
-# GPIO.setwarnings(False)
+import RPi.GPIO as GPIO
+import time
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
 
 
@@ -10,14 +10,45 @@ def operateLED(LEDPin):
     sleep(1)
     GPIO.output(LEDPin, GPIO.LOW)
 
-def operateMotor(motorPin, mode):
+def operateMotor(servoPIN):
+    GPIO.setup(servoPIN, GPIO.OUT)
+
+    p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
+    p.start(2.5) # Initialization
+    try:
+        
+        p.ChangeDutyCycle(2.5)  # turn towards 0 degree
+        time.sleep(7) # sleep 1 second
+        p.ChangeDutyCycle(12.5) # turn towards 180 degree
+        time.sleep(1) # sleep 1 second 
+        p.stop()
+    except KeyboardInterrupt:
+        p.stop()
+        GPIO.cleanup()
     # Mode can be "OPEN" or "CLOSE"
-    if mode == "OPEN":
+    #if mode == "OPEN":
         # Rotate 180
-    if mode == "CLOSE":
+    #if mode == "CLOSE":
         # Rotate the other 180
 
 def detectMotion(pirPin):
     # if motion detected and body stops moving, return motion stopped
     # return motion started
     # return no motion
+    flag = 0
+    GPIO.setup(pirPin, GPIO.IN)              
+    GPIO.setup(3, GPIO.OUT)  
+    while True:
+        i=GPIO.input(pirPin)
+        if i==0 and flag==1:                 #When output from motion sensor is LOW
+            GPIO.output(3, 0)                #Turn OFF LED
+            return "motion stopped"
+        elif i==1:                           #When output from motion sensor is HIGH
+            print("Intruder detected",i)
+            flag = 1
+            GPIO.output(3, 1)                #Turn ON LED
+        time.sleep(1)
+if (detectMotion(11))=="motion stopped":
+    operateMotor(7)
+
+    
