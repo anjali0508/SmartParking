@@ -1,28 +1,61 @@
-{% extends "layout.html" %}
-{%  block style %}
-<title>Resident Profile</title>
-{% endblock %}
-{% block content %}
-<div>
-  <!-- Couldnt centre the card -->
-  <div class="row">
-    <div class="col m4 mx-auto">
-      <div class="card">
-        <div class="card-content">
-          <h4>PROFILE</h4>
-          <div>
-            Name: {{details["Name"]}} <br />
-            Email : {{details["Email"]}} <br />
-            FlatNo: {{details["FlatNo"]}} <br />
-            Phone: {{details["PhoneNo"]}}
-          </div>
-        </div>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <div>PROFILE</div>
+      <div>
+        Name: {{details["Name"]}} <br />
+        Email : {{details["Email"]}} <br />
+        FlatNo: {{details["FlatNo"]}} <br />
+        Phone: {{details["PhoneNo"]}}
       </div>
     </div>
-  </div>
-  <div class="clear" style="clear:both; height: 10px;"></div>
-</div>
-<!-- Use a modal for this or visible on click -->
+    <!-- Use a modal for this or visible on click -->
+    <div class="ChangePassword">
+      CHANGE PASSWORD <br />
+      {%set action = "/Resident/" + id + "/ChangePassword"%}
+      <form>
+        <label for="currentPassword">Enter Current Password</label>
+        <input type="password" id="currentPassword" name="curretntPassword" />
+        <label for="newPassword">Enter New Password</label>
+        <input type="password" id="newPassword" name="newPassword" />
+        <label for="confirmPassword">Confirm New Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" />
+        <input type="button" id="ChangePassword" value="Change Password" />
+      </form>
+    </div>
 
-</body>
-{% endblock content %}
+    <script>
+      // Ajax call to change password
+      $("#ChangePassword").on("click", event => {
+        let action = "{{action | safe}}";
+        let NewPassword = $("#newPassword").val();
+        let confirmPassword = $("#confirmPassword").val();
+        if (NewPassword != confirmPassword) {
+          alert("Passwords do not match");
+        } else {
+          let data = {
+            NewPassword: NewPassword,
+            CurrentPassword: $("#currentPassword").val()
+          };
+
+          $.ajax({
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            url: action,
+            type: "PUT",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: result => {
+              console.log(result);
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
