@@ -143,7 +143,7 @@ def residentFuctions():
                    for resident in residents if resident.val() != None]
         # return jsonify({"Residents": details, "residentCount": len(details)}, 200)
         return render_template(
-            "AdminHome.html",
+            "Admin_Residents.html",
             Residents=details,
             residentCount=len(details)
         )
