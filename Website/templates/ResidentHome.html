@@ -47,7 +47,7 @@
 
     <div class="AddVisitor">
       {%set addAction = "/Resident/" + id + "/AddVisitor" %}
-      <form method="POST">
+      <form>
         <label for="Name">Visitor Name:</label>
         <input type="text" name="Name" id="AddName" />
         <br />
@@ -60,7 +60,7 @@
     <div class="DeleteVisitor">
       DELETE VISITOR <br />
       {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
-      <form method="POST">
+      <form>
         <label for="VehicleNo">Vehicle Number</label>
         <input type="text" name="VehicleNo" id="DelVehicleNo" required />
         <input id="DeleteVisitor" type="button" value="Delete Visitor" />

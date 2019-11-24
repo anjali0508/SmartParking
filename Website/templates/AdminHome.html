@@ -1,0 +1,171 @@
+<!-- Admin home will show resident details -->
+<!-- Add a link to view vehicle details  -->
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="Residents">
+      <div>
+        RESIDENTS
+      </div>
+      {%if residentCount > 0%}
+      <div>
+        <!-- You could add table heading here -->
+        {% for i in range(residentCount)%}
+        <div>
+          Flat No: {{Residents[i]["FlatNo"]}} <br />
+          Name: {{Residents[i]["Name"]}} <br />
+          Email: {{Residents[i]["Email"]}} <br />
+          Phone No: {{Residents[i]["PhoneNo"]}} <br />
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>
+        No residents added
+      </div>
+      {% endif %}
+    </div>
+    <div class="AddResidents">
+      Add
+      <form>
+        {% set action = "Residents" %}
+        <label for="FlatNo">FlatNo</label>
+        <input type="text" name="FlatNo" id="FlatNo" required />
+        <label for="Name">Name</label>
+        <input type="text" name="Name" id="Name" />
+        <label for="Email">Email</label>
+        <input type="text" name="Email" id="Email" />
+        <label for="PhoneNo">PhoneNo</label>
+        <input type="text" name="PhoneNo" id="PhoneNo" />
+        <label for="Password">Password</label>
+        <input type="text" name="Password" id="Password" required />
+        <input type="button" id="AddResident" value="Add Resident" />
+      </form>
+    </div>
+
+    <div class="EditResidents">
+      edit
+      <form>
+        {% set action = "Residents" %}
+        <label for="FlatNo">FlatNo</label>
+        <input type="text" name="FlatNo" id="FlatNo_Edit" required />
+        <label for="Name">Name</label>
+        <input type="text" name="Name" id="Name_Edit" />
+        <label for="Email">Email</label>
+        <input type="text" name="Email" id="Email_Edit" />
+        <label for="PhoneNo">PhoneNo</label>
+        <input type="text" name="PhoneNo" id="PhoneNo_Edit" />
+        <label for="Password">Password</label>
+        <input type="text" name="Password" id="Password_Edit" />
+        <input type="button" id="EditResident" value="Edit Resident" />
+      </form>
+    </div>
+
+    <div class="DeleteResident">
+      DELETE
+      <form>
+        {% set action = "Residents" %}
+        <label for="FlatNo">FlatNo</label>
+        <input type="text" id="FlatNo_del" />
+        <input type="button" id="DeleteResident" value="Delete Resident" />
+      </form>
+    </div>
+    <script>
+      // Ajax call to add resident
+      $("#AddResident").on("click", event => {
+        let action = "{{action | safe}}";
+        console.log(action);
+        let data = {
+          FlatNo: $("#FlatNo").val(),
+          Name: $("#Name").val(),
+          Email: $("#Email").val(),
+          PhoneNo: $("#PhoneNo").val(),
+          Password: $("#Password").val()
+        };
+        // console.log(JSON.stringify(data));
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "POST",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            // console.log(result);
+            window.location.href = "/Admin/Residents";
+          }
+        });
+      });
+
+      //   Ajax call to update resident
+      $("#EditResident").on("click", event => {
+        let action = "{{action | safe}}";
+        console.log(action);
+        let data = { FlatNo: $("#FlatNo_Edit").val() };
+        if ($("#Name_Edit").val()) {
+          data["Name"] = $("#Name_Edit").val();
+        }
+        if ($("#Email_Edit").val()) {
+          data["Email"] = $("#Email_Edit").val();
+        }
+        if ($("#PhoneNo_Edit").val()) {
+          data["PhoneNo"] = $("#PhoneNo_Edit").val();
+        }
+        if ($("#Password_Edit").val()) {
+          data["Password"] = $("#Password_Edit").val();
+        }
+        console.log(JSON.stringify(data));
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "PUT",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            console.log(result);
+            if (result["Message"]) {
+              window.location.href =
+                "/Admin/Residents?Message=" + result["Message"];
+            } else {
+              window.location.href = "/Admin/Residents";
+            }
+          }
+        });
+      });
+
+      //   Ajax call to delete resident
+      $("#DeleteResident").on("click", event => {
+        let action = "{{action | safe}}";
+        console.log(action);
+        let data = { FlatNo: $("#FlatNo_del").val() };
+        console.log(JSON.stringify(data));
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "DELETE",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            // console.log(result);
+            if (result[0]["Success"] == false) {
+              window.location.href =
+                "/Admin/Residents?Message=" + result[0]["Message"];
+            } else {
+              window.location.href = "/Admin/Residents";
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

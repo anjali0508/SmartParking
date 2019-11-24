@@ -141,10 +141,16 @@ def residentFuctions():
         residents = dbRef.child("Residents").get()
         details = [resident.val()
                    for resident in residents if resident.val() != None]
-        return jsonify({"Residents": details, "ResidentCount": len(details)}, 200)
+        # return jsonify({"Residents": details, "residentCount": len(details)}, 200)
+        return render_template(
+            "AdminHome.html",
+            Residents=details,
+            residentCount=len(details)
+        )
 
     elif request.method == "POST":
         if not request.json or not "FlatNo" in request.json or not "Password" in request.json:
+            print("lala")
             abort(400)
         resident = {
             "Email": request.json.get("Email", ""),
@@ -172,9 +178,12 @@ def residentFuctions():
             resident["PhoneNo"] = request.json["PhoneNo"]
         details = dbRef.child("Residents").order_by_child(
             "FlatNo").equal_to(flatNo).get()
-        ID = details[0].key()
-        dbRef.child("Residents").child(ID).update(resident)
-        return jsonify({"Success": True}, 200)
+        try:
+            ID = details[0].key()
+            dbRef.child("Residents").child(ID).update(resident)
+            return jsonify({"Success": True}, 200)
+        except:
+            return jsonify({"Success": False, "Message": "Flat Number does not exist"})
 
     elif request.method == "DELETE":
         if not request.json or not "FlatNo" in request.json:
