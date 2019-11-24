@@ -62,21 +62,26 @@ def showPathVisitor(slot, rowPins, colPins):
 
 
 
-def operateMotor(servoPIN):
+def operateMotor(servoPIN, mode):
     GPIO.setup(servoPIN, GPIO.OUT)
-
+    
     p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
     p.start(7.5) # Initialization
-    try:
-        
-        p.ChangeDutyCycle(2.5)  # turn towards 0 degree
-        time.sleep(7) # sleep 1 second
-        p.ChangeDutyCycle(7.5) # turn towards 90 degree
-        time.sleep(1) # sleep 1 second 
-        p.stop()
-    except KeyboardInterrupt:
-        p.stop()
-        GPIO.cleanup()
+    
+    if(mode=="OPEN"):
+        try:
+            p.ChangeDutyCycle(2.5)  # turn towards 0 degree
+        except KeyboardInterrupt:
+            p.stop()
+            GPIO.cleanup()
+    else if(mode=="CLOSED"):
+        try:
+            p.ChangeDutyCycle(7.5) # turn towards 90 degree
+            time.sleep(1) # sleep 1 second 
+            p.stop()
+        except KeyboardInterrupt:
+            p.stop()
+            GPIO.cleanup()
     # Mode can be "OPEN" or "CLOSE"
     #if mode == "OPEN":
         # Rotate 180
