@@ -36,7 +36,7 @@ def getResident(id):
         "FlatNo").equal_to(id).get()
     # This query returns a single resident if present.
     for resident in residentDetails:
-        return render_template("ResidentProfile.html", details=resident.val())
+        return render_template("ResidentProfile.html", details=resident.val(), id=str(id))
         # return jsonify({"Resident": resident.val()})
     # Else throw 404 error
     abort(404)
@@ -44,7 +44,6 @@ def getResident(id):
 
 @app.route("/Resident/<string:id>/home", methods=["GET"])
 def home(id):
-    print("YA")
     # id = str(id)
     # Get vehicle details
     vehicles = []
@@ -96,7 +95,7 @@ def addVisitor(id):
     return jsonify({"Success": True}, 201)
 
 
-@app.route("/Resident/<string:id>/DeleteVisitor", methods=["POST"])
+@app.route("/Resident/<string:id>/DeleteVisitor", methods=["DELETE"])
 def deleteVisitor(id):
     if not request.json or not "VehicleNo" in request.json:
         abort(400)
@@ -113,18 +112,25 @@ def deleteVisitor(id):
     return jsonify({"Success": False, "Message": "Invalid Vehicle Number"}, 201)
 
 # Change id to string
-@app.route("/Resident/<int:id>/ChangePassword", methods=["POST"])
+@app.route("/Resident/<int:id>/ChangePassword", methods=["PUT"])
+# ADD ENCRYPTION
 def changePassword(id):
-    if not request.json or not "Password" in request.json:
+    if not request.json or not "CurrentPassword" in request.json or not "NewPassword" in request.json:
         abort(400)
     # Hash later
-    password = request.json["Password"]
+    currentPassword = request.json["CurrentPassword"]
+    newPassword = request.json["NewPassword"]
     details = dbRef.child("Residents").order_by_child(
         "FlatNo").equal_to(id).get()
     for x in details:
         ID = x.key()
-    dbRef.child("Residents").child(ID).update({"Password": password})
-    return jsonify({"Success": True}, 201)
+        password = x.val()["Password"]
+        break
+    if password == currentPassword:
+        dbRef.child("Residents").child(ID).update({"Password": newPassword})
+        return jsonify({"Success": True}, 201)
+    else:
+        return jsonify({"Success": False, "Message": "Password you entered is wrong"}, 201)
 
 
 if __name__ == '__main__':

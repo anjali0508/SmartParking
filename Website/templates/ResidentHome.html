@@ -46,25 +46,36 @@
     </div>
 
     <div class="AddVisitor">
-      {%set action = "/Resident/" + id + "/AddVisitor" %} {{action}}
+      {%set addAction = "/Resident/" + id + "/AddVisitor" %}
       <form method="POST">
         <label for="Name">Visitor Name:</label>
-        <input type="text" name="Name" id="Name" />
+        <input type="text" name="Name" id="AddName" />
         <br />
         <label for="VehicleNo">Vehicle Number</label>
-        <input type="text" name="VehicleNo" id="VehicleNo" required />
+        <input type="text" name="VehicleNo" id="AddVehicleNo" required />
         <input id="AddVisitor" type="button" value="Add Visitor" />
       </form>
     </div>
 
+    <div class="DeleteVisitor">
+      DELETE VISITOR <br />
+      {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
+      <form method="POST">
+        <label for="VehicleNo">Vehicle Number</label>
+        <input type="text" name="VehicleNo" id="DelVehicleNo" required />
+        <input id="DeleteVisitor" type="button" value="Delete Visitor" />
+      </form>
+    </div>
+
     <script>
+      // Ajax call to add visitor
       $("#AddVisitor").on("click", function(event) {
-        var action = "{{action | safe}}"; // use the jinja variable action
+        var action = "{{addAction | safe}}"; // use the jinja variable action
         var data = {
-          Name: $("#Name").val(),
-          VehicleNo: $("#VehicleNo").val()
+          Name: $("#AddName").val(),
+          VehicleNo: $("#AddVehicleNo").val()
         };
-        // console.log(JSON.stringify(data));
+
         $.ajax({
           headers: {
             Accept: "application/json",
@@ -72,6 +83,30 @@
           },
           url: action,
           type: "POST",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: function(result) {
+            console.log(result);
+            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+            window.location.href = reloadURL;
+          }
+        });
+      });
+
+      // Ajax call to delete visitor
+      $("#DeleteVisitor").on("click", function(event) {
+        var action = "{{deleteAction | safe}}"; // use the jinja variable action
+        var data = {
+          VehicleNo: $("#DelVehicleNo").val()
+        };
+        console.log(JSON.stringify(data));
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "DELETE",
           dataType: "json",
           data: JSON.stringify(data),
           success: function(result) {
