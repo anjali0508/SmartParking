@@ -1,7 +1,7 @@
-from flask import Flask, make_response, jsonify, abort, request
+from flask import Flask, make_response, jsonify, abort, request, render_template, url_for, redirect
 import pyrebase
 import FirebaseConfig.Configure as firebase
-
+import time
 from Database.IDGenerator import ID as IDgen
 IDgen = IDgen()
 IDgen.setVisitorID()
@@ -36,13 +36,15 @@ def getResident(id):
         "FlatNo").equal_to(id).get()
     # This query returns a single resident if present.
     for resident in residentDetails:
-        return jsonify({"Resident": resident.val()})
+        return render_template("ResidentProfile.html", details=resident.val())
+        # return jsonify({"Resident": resident.val()})
     # Else throw 404 error
     abort(404)
 
 
 @app.route("/Resident/<string:id>/home", methods=["GET"])
 def home(id):
+    print("YA")
     # id = str(id)
     # Get vehicle details
     vehicles = []
@@ -60,7 +62,19 @@ def home(id):
         details = visitor.val()
         del details["FlatNo"]
         visitors.append(details)
-    return jsonify({"Vehicles": vehicles, "VisitoVehicles": visitors})
+    return render_template(
+        "ResidentHome.html",
+        vehicles=vehicles,
+        vehicleCount=len(vehicles),
+        visitorVehicles=visitors,
+        visitorCount=len(visitors),
+        id=id
+    )
+    # return jsonify({
+    #     "Vehicles": vehicles,
+    #     "VehicleCount": len(vehicles),
+    #     "Visitors": visitors,
+    #     "VisitorCount": len(visitors)})
 
 
 @app.route("/Resident/<string:id>/AddVisitor", methods=["POST"])
@@ -78,6 +92,7 @@ def addVisitor(id):
 
     visitorID = IDgen.getNextVisitorID()
     dbRef.child("Visitors").child(visitorID).set(visitor)
+    # Add a success message
     return jsonify({"Success": True}, 201)
 
 

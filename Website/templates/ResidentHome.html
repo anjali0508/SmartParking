@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="Vehicles">
+      {%if visitorCount > 0 %}
+      <div>
+        YOUR VEHICLES
+      </div>
+      <div>
+        <!-- prettier-ignore -->
+        {% for i in range(vehicleCount) %}
+        <div>
+          Vehicle Number: {{vehicles[i]["VehicleNo"]}} <br />
+          Allotted Slot: {{vehicles[i]["AllottedSlot"]}}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>
+        YOU DO NOT HAVE ANY VEHICLES REGISTERED. <br />
+        IF YOU WISJ=H TO REGISTER, PLEASE CONTACT THE ADMIN
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="Visitors">
+      {%if visitorCount > 0 %}
+      <div>
+        EXPECTED VISITORS
+      </div>
+      <div>
+        {% for i in range(visitorCount) %}
+        <div>
+          Name: {{visitorVehicles[i]["Name"]}} <br />
+          Vehicle Number: {{visitorVehicles[i]["VehicleNo"]}}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>
+        YOU ARE NOT EXPECTING ANY VISITORS AT PRESENT
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="AddVisitor">
+      {%set action = "/Resident/" + id + "/AddVisitor" %} {{action}}
+      <form method="POST">
+        <label for="Name">Visitor Name:</label>
+        <input type="text" name="Name" id="Name" />
+        <br />
+        <label for="VehicleNo">Vehicle Number</label>
+        <input type="text" name="VehicleNo" id="VehicleNo" required />
+        <input id="AddVisitor" type="button" value="Add Visitor" />
+      </form>
+    </div>
+
+    <script>
+      $("#AddVisitor").on("click", function(event) {
+        var action = "{{action | safe}}"; // use the jinja variable action
+        var data = {
+          Name: $("#Name").val(),
+          VehicleNo: $("#VehicleNo").val()
+        };
+        // console.log(JSON.stringify(data));
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "POST",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: function(result) {
+            console.log(result);
+            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+            window.location.href = reloadURL;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -76,17 +76,21 @@ class ID:
         return self.parkingSlotID
 
 
+# id = ID()
+# id.setResidentID()
+# id.setResidentVehicleID()
+
 if __name__ == "__main__":
     id = ID()
-    id.setResidentID()
+    # id.setResidentID()
     print("Initial Resident ID:", id.getResidentID())
     print("Next Resident ID:", id.getNextResidentID())
-    id.setVisitorID()
+    # id.setVisitorID()
     print("Initial Visitor ID:", id.getVisitorID())
     print("Next Visitor ID:", id.getNextVisitorID())
-    id.setResidentVehicleID()
+    # id.setResidentVehicleID()
     print("Initial Resident Vehicle ID:", id.getResidentVehicleID())
     print("Next Resident Vehicle ID:", id.getNextResidentVehicleID())
-    id.setVisitorID()
+    # id.setVisitorID()
     print("Initial Parking Slot ID:", id.getParkingSlotID())
     print("Next Parking Slot ID:", id.getNextParkingSlotID())
