@@ -1,121 +1,226 @@
-<html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  </head>
-  <body>
-    <div class="Vehicles">
+{% extends "layout.html" %}
+{%block style %}
+<title>Resident Home</title>
+<style>
+  .headings {
+    text-align: center;
+    margin: auto;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    margin-left: 9%;
+  }
+
+  .buttonModal {
+    position: absolute;
+    background-color: #233142;
+    border: none;
+    border-radius: 4px;
+    color: #ccc;
+    font-size: 1.5rem;
+    font-family: "Prata";
+    letter-spacing: 2px;
+  }
+
+  .buttonModal {
+    display: block;
+    width: 200px;
+    height: 40px;
+    cursor: pointer;
+    transition: box-shadow 0.1s linear;
+  }
+
+  .buttonModal:hover {
+    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
+  }
+</style>
+{% endblock style%}
+
+<body>
+  {% block content %}
+  <div class="Vehicles">
+    <div class="headings">
+      YOUR VEHICLES:
+    </div>
+    <div>
       {%if visitorCount > 0 %}
-      <div>
-        YOUR VEHICLES
-      </div>
-      <div>
-        <!-- prettier-ignore -->
+
+      <div class="row">
         {% for i in range(vehicleCount) %}
-        <div>
-          Vehicle Number: {{vehicles[i]["VehicleNo"]}} <br />
-          Allotted Slot: {{vehicles[i]["AllottedSlot"]}}
+        <div class="col m4">
+          <div class="card">
+            <div class="card-content">
+              <p>Vehicle Number : {{vehicles[i]["VehicleNo"]}} </p>
+              <p>Alloted Slot : {{vehicles[i]["AllottedSlot"]}}</p>
+            </div>
+          </div>
         </div>
         {% endfor %}
       </div>
+      <div class="clear" style="clear:both; height: 10px;">
+      </div>
       {% else %}
-      <div>
-        YOU DO NOT HAVE ANY VEHICLES REGISTERED. <br />
-        IF YOU WISJ=H TO REGISTER, PLEASE CONTACT THE ADMIN
-      </div>
-      {% endif %}
-    </div>
-
-    <div class="Visitors">
-      {%if visitorCount > 0 %}
-      <div>
-        EXPECTED VISITORS
-      </div>
-      <div>
-        {% for i in range(visitorCount) %}
-        <div>
-          Name: {{visitorVehicles[i]["Name"]}} <br />
-          Vehicle Number: {{visitorVehicles[i]["VehicleNo"]}}
+      <div class="row">
+        <div class="col m4">
+          <div class="card">
+            <div class="card-content">
+              <p>YOU DO NOT HAVE ANY REGISTERED VEHICLES. CONTACT ADMIN TO REGISTER.</p>
+            </div>
+          </div>
         </div>
-        {% endfor %}
       </div>
-      {% else %}
-      <div>
-        YOU ARE NOT EXPECTING ANY VISITORS AT PRESENT
-      </div>
+      <div class="clear" style="clear:both; height: 10px;"></div>
       {% endif %}
     </div>
-
-    <div class="AddVisitor">
-      {%set addAction = "/Resident/" + id + "/AddVisitor" %}
-      <form>
-        <label for="Name">Visitor Name:</label>
-        <input type="text" name="Name" id="AddName" />
-        <br />
-        <label for="VehicleNo">Vehicle Number</label>
-        <input type="text" name="VehicleNo" id="AddVehicleNo" required />
-        <input id="AddVisitor" type="button" value="Add Visitor" />
-      </form>
+  </div>
+  <br>
+  <div class="Visitors">
+    <div class="headings">
+      VISITORS:
     </div>
-
-    <div class="DeleteVisitor">
-      DELETE VISITOR <br />
-      {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
-      <form>
-        <label for="VehicleNo">Vehicle Number</label>
-        <input type="text" name="VehicleNo" id="DelVehicleNo" required />
-        <input id="DeleteVisitor" type="button" value="Delete Visitor" />
-      </form>
+    {%if visitorCount > 0 %}
+    <div class="row">
+      {% for i in range(visitorCount) %}
+      <div class="col m4">
+        <div class="card">
+          <div class="card-content">
+            <p><span style="color: greenyellow;">Visitor Name :</span> {{visitorVehicles[i]["Name"]}}</p>
+            <p><span style="color: greenyellow;">Vehicle Number :</span> {{visitorVehicles[i]["VehicleNo"]}}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
     </div>
+    <div class="clear" style="clear:both; height: 5px;">
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col m4">
+        <div class="card">
+          <div class="card-content">
+            <p>YOU ARE NOT EXPECTING ANY VISITORS AT PRESENT</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clear" style="clear:both; height: 5px;"></div>
+    {% endif %}
+    <div style="margin-left: 30%;">
+      <!-- Trigger the modal with a button -->
+      <button type="button" class="buttonModal" class="btn btn-info btn-lg" data-toggle="modal"
+        data-target="#myModal">ADD VISITOR</button>
 
-    <script>
-      // Ajax call to add visitor
-      $("#AddVisitor").on("click", function(event) {
-        var action = "{{addAction | safe}}"; // use the jinja variable action
-        var data = {
-          Name: $("#AddName").val(),
-          VehicleNo: $("#AddVehicleNo").val()
-        };
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
 
-        $.ajax({
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          url: action,
-          type: "POST",
-          dataType: "json",
-          data: JSON.stringify(data),
-          success: function(result) {
-            console.log(result);
-            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
-            window.location.href = reloadURL;
-          }
-        });
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4>ADD VISITOR</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="AddVisitor">
+                {%set addAction = "/Resident/" + id + "/AddVisitor" %}
+                <form method="POST">
+                  <label for="Name">Visitor Name:</label>
+                  <input type="text" name="Name" id="AddName" />
+                  <br />
+                  <label for="VehicleNo">Vehicle Number</label>
+                  <input type="text" name="VehicleNo" id="AddVehicleNo" required />
+                  <input id="AddVisitor" type="button" value="Add Visitor" />
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Trigger the modal with a button -->
+      <button style="left: 50%; width: 250px;" type="button" class="buttonModal" class="btn btn-info btn-lg"
+        data-toggle="modal" data-target="#myModal1">DELETE
+        VISITOR</button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal1" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4>DELETE VISITOR</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              <div class="DeleteVisitor">
+                {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
+                <form method="POST">
+                  <label for="VehicleNo">Vehicle Number</label>
+                  <input type="text" name="VehicleNo" id="DelVehicleNo" required />
+                  <input id="DeleteVisitor" type="button" value="Delete Visitor" />
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <script>
+    // Ajax call to add visitor
+    $("#AddVisitor").on("click", function (event) {
+      var action = "{{addAction | safe}}"; // use the jinja variable action
+      var data = {
+        Name: $("#AddName").val(),
+        VehicleNo: $("#AddVehicleNo").val()
+      };
+
+      $.ajax({
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        url: action,
+        type: "POST",
+        dataType: "json",
+        data: JSON.stringify(data),
+        success: function (result) {
+          console.log(result);
+          var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+          window.location.href = reloadURL;
+        }
       });
+    });
 
-      // Ajax call to delete visitor
-      $("#DeleteVisitor").on("click", function(event) {
-        var action = "{{deleteAction | safe}}"; // use the jinja variable action
-        var data = {
-          VehicleNo: $("#DelVehicleNo").val()
-        };
-        console.log(JSON.stringify(data));
-        $.ajax({
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          url: action,
-          type: "DELETE",
-          dataType: "json",
-          data: JSON.stringify(data),
-          success: function(result) {
-            console.log(result);
-            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
-            window.location.href = reloadURL;
-          }
-        });
+    // Ajax call to delete visitor
+    $("#DeleteVisitor").on("click", function (event) {
+      var action = "{{deleteAction | safe}}"; // use the jinja variable action
+      var data = {
+        VehicleNo: $("#DelVehicleNo").val()
+      };
+      console.log(JSON.stringify(data));
+      $.ajax({
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        url: action,
+        type: "DELETE",
+        dataType: "json",
+        data: JSON.stringify(data),
+        success: function (result) {
+          console.log(result);
+          var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+          window.location.href = reloadURL;
+        }
       });
-    </script>
-  </body>
-</html>
+    });
+  </script>
+  {% endblock content %}
+</body>
