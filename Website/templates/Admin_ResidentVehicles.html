@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="ResidentVehicles">
+      <div>
+        RESIDENT VEHICLES
+      </div>
+      {% if vehicleCount > 0 %}
+      <div>
+        <!-- TABLE headings could go here -->
+        {% for i in range(vehicleCount) %}
+        <div>
+          FlatNo: {{vehicles[i]["FlatNo"]}} <br />
+          VehicleNo: {{vehicles[i]["VehicleNo"]}} <br />
+          AllottedSlot: {{vehicles[i]["AllottedSlot"]}} <br />
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>
+        No vehicles registered
+      </div>
+      {% endif %}
+    </div>
+    <div class="AddVehicle">
+      ADD VEHICLE
+      <form>
+        {% set action = "ResidentVehicles" %}
+        <label>FlatNO</label>
+        <input type="text" id="FlatNo" />
+        <label>VehicleNo</label>
+        <input type="text" id="VehicleNo" />
+        <label>Allotted Slot</label>
+        <input type="text" id="AllottedSlot" />
+        <input type="button" id="AddVehicle" value="Add Vehicle" />
+      </form>
+    </div>
+
+    <div class="DeleteVehicle">
+      DELETE VEHICLE
+      <form>
+        {% set action = "ResidentVehicles" %}
+        <label>VehicleNo</label>
+        <input type="text" id="VehicleNo_del" />
+        <input type="button" id="DeleteVehicle" value="Delete Vehicle" />
+      </form>
+    </div>
+
+    <script>
+      // Ajax call to add vehicle
+      $("#AddVehicle").on("click", event => {
+        let action = "{{action | safe}}";
+        console.log(action);
+        let data = {
+          FlatNo: $("#FlatNo").val(),
+          VehicleNo: $("#VehicleNo").val(),
+          AllottedSlot: $("#AllottedSlot").val()
+        };
+        console.log(JSON.stringify(data));
+
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "POST",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            if (result["Success"] == false) {
+              window.location.href =
+                "/Admin/ResidentVehicles?Message=" + result["Message"];
+            } else {
+              window.location.href = "/Admin/ResidentVehicles";
+            }
+          }
+        });
+      });
+
+      // Ajax call to delete vehicle
+      $("#DeleteVehicle").on("click", event => {
+        let action = "{{action | safe}}";
+        console.log(action);
+        let data = { VehicleNo: $("#VehicleNo_del").val() };
+        console.log(JSON.stringify(data));
+
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "DELETE",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            // console.log(result);
+            if (result["Success"] == false) {
+              window.location.href =
+                "/Admin/ResidentVehicles?Message=" + result["Message"];
+            } else {
+              window.location.href = "/Admin/ResidentVehicles";
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

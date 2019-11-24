@@ -204,14 +204,19 @@ def residentFuctions():
         abort(404)
 
 
-@app.route("/Admin/ResidentVehicles", methods=["GET", "PUT", "DELETE", "POST", "PATCH"])
+@app.route("/Admin/ResidentVehicles", methods=["GET", "DELETE", "POST"])
 def residentVehicleFuctions():
     if request.method == "GET":
         vehicles = dbRef.child(
             "ResidentVehicles").get()
         details = [vehicles.val()
                    for vehicles in vehicles if vehicles.val() != None]
-        return jsonify({"Vehicles": details, "VehicleCount": len(details)}, 200)
+        # return jsonify({"Vehicles": details, "VehicleCount": len(details)}, 200)
+        return render_template(
+            "Admin_ResidentVehicles.html",
+            vehicles=details,
+            vehicleCount=len(details)
+        )
 
     elif request.method == "POST":
         if (
@@ -240,7 +245,7 @@ def residentVehicleFuctions():
                 vehicleID = IDgen.getNextResidentVehicleID()
                 dbRef.child("ResidentVehicles").child(
                     vehicleID).set(vehicle)
-                return jsonify({"Success": True}, 201)
+                return jsonify({"Success": True})
             else:
                 return jsonify({"Success": False, "Message": "Slot not free"})
         except IndexError:
@@ -256,7 +261,7 @@ def residentVehicleFuctions():
         try:
             ID = details[0].key()
             if ID == None:
-                return jsonify({"Success": False, "Message": "Vehicle does not exist"}, 404)
+                return jsonify({"Success": False, "Message": "Vehicle does not exist"})
             slot = details[0].val()["AllottedSlot"]
             # Free the allotted slot
             slotDetails = dbRef.child("ParkingSlots").order_by_child(
@@ -264,9 +269,9 @@ def residentVehicleFuctions():
             key = slotDetails[0].key()
             dbRef.child("ParkingSlots").child(key).update({"Allotted": False})
             dbRef.child("ResidentVehicles").child(ID).remove()
-            return jsonify({"Success": True}, 200)
+            return jsonify({"Success": True})
         except IndexError:
-            return jsonify({"Success": False, "Message": "Vehicle does not exist"}, 404)
+            return jsonify({"Success": False, "Message": "Vehicle does not exist"})
 
     else:
         abort(404)
