@@ -109,11 +109,13 @@ def deleteVisitor(id):
     if flatNo == id:
         dbRef.child("Visitors").child(visitorID).remove()
         return jsonify({"Success": True}, 201)
+        # send back 200
     return jsonify({"Success": False, "Message": "Invalid Vehicle Number"}, 201)
 
 # Change id to string
 @app.route("/Resident/<int:id>/ChangePassword", methods=["PUT"])
 # ADD ENCRYPTION
+# Method must be PATCH
 def changePassword(id):
     if not request.json or not "CurrentPassword" in request.json or not "NewPassword" in request.json:
         abort(400)
@@ -131,6 +133,134 @@ def changePassword(id):
         return jsonify({"Success": True}, 201)
     else:
         return jsonify({"Success": False, "Message": "Password you entered is wrong"}, 201)
+
+
+@app.route("/Admin/Residents", methods=["GET", "PUT", "DELETE", "POST"])
+def residentFuctions():
+    if request.method == "GET":
+        residents = dbRef.child("Residents").get()
+        details = [resident.val()
+                   for resident in residents if resident.val() != None]
+        return jsonify({"Residents": details, "ResidentCount": len(details)}, 200)
+
+    elif request.method == "POST":
+        if not request.json or not "FlatNo" in request.json or not "Password" in request.json:
+            abort(400)
+        resident = {
+            "Email": request.json.get("Email", ""),
+            "FlatNo": request.json["FlatNo"],
+            "Name": request.json.get("Name", ""),
+            "Password": request.json["Password"],
+            "PhoneNo": request.json.get("PhoneNo", "")
+        }
+        residentID = IDgen.getNextResidentID()
+        dbRef.child("Residents").child(residentID).set(resident)
+        return jsonify({"Success": True}, 201)
+
+    elif request.method == "PUT":
+        if not request.json or not "FlatNo" in request.json:
+            abort(400)
+        resident = {}
+        flatNo = request.json["FlatNo"]
+        if "Name" in request.json:
+            resident["Name"] = request.json["Name"]
+        if "Email" in request.json:
+            resident["Email"] = request.json["Email"]
+        if "Password" in request.json:
+            resident["Password"] = request.json["Password"]
+        if "PhoneNo" in request.json:
+            resident["PhoneNo"] = request.json["PhoneNo"]
+        details = dbRef.child("Residents").order_by_child(
+            "FlatNo").equal_to(flatNo).get()
+        ID = details[0].key()
+        dbRef.child("Residents").child(ID).update(resident)
+        return jsonify({"Success": True}, 200)
+
+    elif request.method == "DELETE":
+        if not request.json or not "FlatNo" in request.json:
+            abort(400)
+        flatNo = request.json["FlatNo"]
+        details = dbRef.child("Residents").order_by_child(
+            "FlatNo").equal_to(flatNo).get()
+        try:
+            ID = details[0].key()
+            if ID == None:
+                return jsonify({"Success": False, "Message": "Flat Number does not exist"}, 404)
+            dbRef.child("Residents").child(ID).remove()
+            return jsonify({"Success": True}, 200)
+        except IndexError:
+            return jsonify({"Success": False, "Message": "Flat Number does not exist"}, 404)
+
+    else:
+        abort(404)
+
+
+@app.route("/Admin/ResidentVehicles", methods=["GET", "PUT", "DELETE", "POST", "PATCH"])
+def residentVehicleFuctions():
+    if request.method == "GET":
+        vehicles = dbRef.child(
+            "ResidentVehicles").get()
+        details = [vehicles.val()
+                   for vehicles in vehicles if vehicles.val() != None]
+        return jsonify({"Vehicles": details, "VehicleCount": len(details)}, 200)
+
+    elif request.method == "POST":
+        if (
+            not request.json or
+            not "FlatNo" in request.json or
+            not "VehicleNo" in request.json or
+            not "AllottedSlot" in request.json
+        ):
+            abort(400)
+
+        slot = request.json["AllottedSlot"]
+        slotDetails = dbRef.child("ParkingSlots").order_by_child(
+            "SlotNo").equal_to(slot).get()
+        try:
+            if slotDetails[0].val()["Allotted"] == False:
+                key = slotDetails[0].key()
+                # Update slot details
+                dbRef.child("ParkingSlots").child(
+                    key).update({"Allotted": True})
+                # Add vehicle
+                vehicle = {
+                    "FlatNo": request.json["FlatNo"],
+                    "VehicleNo": request.json["VehicleNo"],
+                    "AllottedSlot": request.json["AllottedSlot"]
+                }
+                vehicleID = IDgen.getNextResidentVehicleID()
+                dbRef.child("ResidentVehicles").child(
+                    vehicleID).set(vehicle)
+                return jsonify({"Success": True}, 201)
+            else:
+                return jsonify({"Success": False, "Message": "Slot not free"})
+        except IndexError:
+            return jsonify({"Success": False, "Message": "Slot not available"})
+
+    elif request.method == "DELETE":
+        if not request.json or not "VehicleNo" in request.json:
+            abort(400)
+        vehicleNo = request.json["VehicleNo"]
+        details = dbRef.child("ResidentVehicles").order_by_child(
+            "VehicleNo").equal_to(vehicleNo).get()
+
+        try:
+            ID = details[0].key()
+            if ID == None:
+                return jsonify({"Success": False, "Message": "Vehicle does not exist"}, 404)
+            slot = details[0].val()["AllottedSlot"]
+            # Free the allotted slot
+            slotDetails = dbRef.child("ParkingSlots").order_by_child(
+                "SlotNo").equal_to(slot).get()
+            key = slotDetails[0].key()
+            dbRef.child("ParkingSlots").child(key).update({"Allotted": False})
+            dbRef.child("ResidentVehicles").child(ID).remove()
+            return jsonify({"Success": True}, 200)
+        except IndexError:
+            return jsonify({"Success": False, "Message": "Vehicle does not exist"}, 404)
+
+    else:
+        abort(404)
 
 
 if __name__ == '__main__':
