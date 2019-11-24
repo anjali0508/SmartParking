@@ -5,9 +5,9 @@
   .headings {
     text-align: center;
     margin: auto;
+    font-size: 27px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-weight: bold;
-    margin-left: 9%;
   }
 
   .buttonModal {
@@ -17,8 +17,6 @@
     border-radius: 4px;
     color: #ccc;
     font-size: 1.5rem;
-    font-family: "Prata";
-    letter-spacing: 2px;
   }
 
   .buttonModal {
@@ -46,11 +44,11 @@
 
       <div class="row">
         {% for i in range(vehicleCount) %}
-        <div class="col m4">
-          <div class="card">
+        <div class="col-sm-6 col-md-3">
+          <div class="card mb-3">
             <div class="card-content">
-              <p>Vehicle Number : {{vehicles[i]["VehicleNo"]}} </p>
-              <p>Alloted Slot : {{vehicles[i]["AllottedSlot"]}}</p>
+              <p><span style="color: greenyellow;">Vehicle Number : </span>{{vehicles[i]["VehicleNo"]}} </p>
+              <p><span style="color: greenyellow;">Alloted Slot : </span>{{vehicles[i]["AllottedSlot"]}}</p>
             </div>
           </div>
         </div>
@@ -60,8 +58,8 @@
       </div>
       {% else %}
       <div class="row">
-        <div class="col m4">
-          <div class="card">
+        <div class="col-sm-6 col-md-3">
+          <div class="card mb-3">
             <div class="card-content">
               <p>YOU DO NOT HAVE ANY REGISTERED VEHICLES. CONTACT ADMIN TO REGISTER.</p>
             </div>
@@ -73,15 +71,16 @@
     </div>
   </div>
   <br>
+
   <div class="Visitors">
     <div class="headings">
       VISITORS:
     </div>
     {%if visitorCount > 0 %}
-    <div class="row">
+    <div class="row" style="padding: 1%;">
       {% for i in range(visitorCount) %}
-      <div class="col m4">
-        <div class="card">
+      <div class="col-sm=-6 col-md-4">
+        <div class="card mb-3">
           <div class="card-content">
             <p><span style="color: greenyellow;">Visitor Name :</span> {{visitorVehicles[i]["Name"]}}</p>
             <p><span style="color: greenyellow;">Vehicle Number :</span> {{visitorVehicles[i]["VehicleNo"]}}</p>
@@ -104,72 +103,73 @@
     </div>
     <div class="clear" style="clear:both; height: 5px;"></div>
     {% endif %}
-    <div style="margin-left: 30%;">
+    <div style="margin-left: 25%;">
       <!-- Trigger the modal with a button -->
       <button type="button" class="buttonModal" class="btn btn-info btn-lg" data-toggle="modal"
         data-target="#myModal">ADD VISITOR</button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="myModal" role="dialog">
-        <div class="modal-dialog">
-
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4>ADD VISITOR</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-              <div class="AddVisitor">
-                {%set addAction = "/Resident/" + id + "/AddVisitor" %}
-                <form method="POST">
-                  <label for="Name">Visitor Name:</label>
-                  <input type="text" name="Name" id="AddName" />
-                  <br />
-                  <label for="VehicleNo">Vehicle Number</label>
-                  <input type="text" name="VehicleNo" id="AddVehicleNo" required />
-                  <input id="AddVisitor" type="button" value="Add Visitor" />
-                </form>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Trigger the modal with a button -->
-      <button style="left: 50%; width: 250px;" type="button" class="buttonModal" class="btn btn-info btn-lg"
-        data-toggle="modal" data-target="#myModal1">DELETE
-        VISITOR</button>
-
-      <!-- Modal -->
-      <div class="modal fade" id="myModal1" role="dialog">
-        <div class="modal-dialog">
-
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4>DELETE VISITOR</h4>
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-              <div class="DeleteVisitor">
-                {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
-                <form method="POST">
-                  <label for="VehicleNo">Vehicle Number</label>
-                  <input type="text" name="VehicleNo" id="DelVehicleNo" required />
-                  <input id="DeleteVisitor" type="button" value="Delete Visitor" />
-                </form>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-
-
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>ADD VISITOR</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="AddVisitor">
+              {%set addAction = "/Resident/" + id + "/AddVisitor" %}
+              <form method="POST">
+                <label for="Name">Visitor Name:</label>
+                <input type="text" name="Name" id="AddName" />
+                <br />
+                <label for="VehicleNo">Vehicle Number</label>
+                <input type="text" name="VehicleNo" id="AddVehicleNo" required /><br>
+                <input id="AddVisitor" type="button" value="Add Visitor" />
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Trigger the modal with a button -->
+    <button style="left: 60%; width: 200px;" type="button" class="buttonModal" class="btn btn-info btn-lg"
+      data-toggle="modal" data-target="#myModal1">DELETE
+      VISITOR</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal1" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4>DELETE VISITOR</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="DeleteVisitor">
+              {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
+              <form method="POST">
+                <label for="VehicleNo">Vehicle Number</label>
+                <input type="text" name="VehicleNo" id="DelVehicleNo" required /><br>
+                <input id="DeleteVisitor" type="button" value="Delete Visitor" />
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+  </div>
   </div>
 
   <script>
