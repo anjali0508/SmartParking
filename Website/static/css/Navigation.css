@@ -1,0 +1,64 @@
+nav {
+  color: white;
+  padding: 20px 10px;
+  font-size: 20px;
+}
+
+nav .navbar-header {
+  font-size: 15px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+table {
+  margin-top: 20px;
+}
+
+th,
+td {
+  text-align: center !important;
+}
+
+.message {
+  text-align: center;
+  font-size: 25px;
+  font-weight: 500;
+  color: darkslategrey;
+  padding: 20px;
+}
+
+.formButtons {
+  text-align: center;
+  padding: 20px;
+}
+
+.formButtons button {
+  margin: 0 10px;
+  padding: 5px;
+  background-color: transparent;
+  border: black solid 2px;
+  border-radius: 5px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.modal-title {
+  font-size: 25px;
+}
+
+.modal-body {
+  font-size: 17px;
+}
+
+form input[type="button"] {
+  border: 1px solid black;
+  margin-top: 10px;
+}
+
+form label {
+  margin-top: 10px;
+}
