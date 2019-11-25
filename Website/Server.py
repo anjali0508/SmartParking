@@ -113,8 +113,7 @@ def home():
         vehicles=vehicles,
         vehicleCount=len(vehicles),
         visitorVehicles=visitors,
-        visitorCount=len(visitors),
-        id=id
+        visitorCount=len(visitors)
     )
 
 
