@@ -89,7 +89,7 @@ while True:
         print("exit")
         plateNumber = lpr.extractLPN(imageName)
         print(plateNumber)
-        # function to delete from db
+        db.deleteVisitor(plateNumber)
         
 
 
