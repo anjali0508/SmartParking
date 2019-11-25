@@ -64,7 +64,15 @@ def login():
     else:
         abort(404)
 
-# Change id to string
+
+@app.route("/Logout")
+def logout():
+    if session.get("LoggedIn"):
+        del session["LoggedIn"]
+        del session["User"]
+    return jsonify({"Logout": "Successful"})
+
+
 @app.route("/Resident/Profile", methods=["GET"])
 def profile():
     if not session.get("LoggedIn") or session.get("User") == "Admin":

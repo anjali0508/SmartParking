@@ -62,3 +62,17 @@ form input[type="button"] {
 form label {
   margin-top: 10px;
 }
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 25%;
+  margin: auto;
+  margin-top: 20px;
+  padding: 50px;
+  justify-content: center;
+}
+
+/* .card input[type="text"],
+.card input[type="password"] {
+  width: 80%;
+} */

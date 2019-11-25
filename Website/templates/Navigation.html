@@ -15,13 +15,27 @@
     <nav class="navbar navbar-inverse">
       <div class="container-fluid">
         <span>SMART PARKING SYSTEM</span>
-        <div class="navbar-right">
-          <span id="logout">LOGOUT</span>
-        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/Admin/Residents">RESIDENTS</a></li>
+          <li><a href="/Admin/ResidentVehicles">VEHICLES</a></li>
+          <li id="Logout"><a href="#">LOGOUT</a></li>
+        </ul>
       </div>
     </nav>
     <div class="container">
       {% block content %} {% endblock %}
     </div>
+    <script>
+      $("#Logout").on("click", event => {
+        console.log("jaja");
+        $.ajax({
+          url: "/Logout",
+          type: "GET",
+          success: result => {
+            window.location.href = "/Login";
+          }
+        });
+      });
+    </script>
   </body>
 </html>
