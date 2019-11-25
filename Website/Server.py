@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify, abort, request, render_template, url_for, redirect
+from flask import Flask, make_response, jsonify, abort, request, render_template, url_for, redirect, session
 import pyrebase
 import FirebaseConfig.Configure as firebase
 import time
@@ -28,6 +28,26 @@ def badRequest(error):
 @app.route("/")
 def index():
     return "Hello World"
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    if not request.json or not "Username" in request.json or not "Password" in request.json:
+        abort(400)
+    username = request.json["Username"]
+    password = request.json["Password"]
+    user = dbRef.chils("Residents").order_by_child(
+        "FlatNo").equal_to(username).get()
+    try:
+        passwordCheck = user[0].val()["Password"]
+        if password == passwordCheck:
+            session["LoggedIn"] = True
+            session["User"] = username
+            return jsonify({"Login": "Successful"})
+        else:
+            return jsonify({"Login": "no"})
+    except:
+        return jsonify({"Login": "no"})
 
 # Change id to string
 @app.route("/Resident/<int:id>/Profile", methods=["GET"])
@@ -199,7 +219,7 @@ def residentFuctions():
             return jsonify({"Success": True}, 200)
         except IndexError:
             return jsonify({"Success": False, "Message": "Flat Number does not exist"}, 404)
-
+        # DELETE VEHICLES TOO
     else:
         abort(404)
 
