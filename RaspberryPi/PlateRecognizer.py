@@ -4,7 +4,7 @@ import pytesseract
 from PIL import Image
 import re
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 #To be used during development
 def show(name, image):
@@ -12,10 +12,11 @@ def show(name, image):
     cv2.waitKey(0)
 
 def preprocesing(image):
-    show("Original", image)
+    #show("Original", image)
 
     # Grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    #show("Grey", gray)
     # Remove Noise
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3,3))
     tophat = cv2.morphologyEx(gray, cv2.MORPH_TOPHAT, kernel)
@@ -46,7 +47,7 @@ def getSuitableContours(image, original):
     # Visualization
     original = original.copy()
     cv2.drawContours(original, bottomContours, -1, (0,255,0), 2)
-    show("Suitable Contours", original)
+    #show("Suitable Contours", original)
     return bottomContours
 
 def getRawLPNumbers(contours, image):
@@ -93,7 +94,6 @@ def extractLPN(imageName):
     cleanNumber = getLPNumber(rawNumbers)
     cv2.destroyAllWindows
     return cleanNumber
-    
-#Cars passed: 2, 4, 5, 7, 8,6
+#Cars passed: 5,7
 #Cars failed: 
 # 3(LP blurred, tessaract couldnt obtain, but LP cropped properly)

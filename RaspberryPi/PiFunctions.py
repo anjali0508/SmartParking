@@ -64,21 +64,27 @@ def showPathVisitor(slot, rowPins, colPins):
 
 def operateMotor(servoPIN, mode):
     GPIO.setup(servoPIN, GPIO.OUT)
-    
-    p = GPIO.PWM(servoPIN, 50) # GPIO 17 for PWM with 50Hz
-    p.start(7.5) # Initialization
-    
+    #p.start(7.5) # Initialization
+    print(mode)
     if(mode=="OPEN"):
+        p = GPIO.PWM(40, 50)
+        p.start(7.5)
+        print("motor")
         try:
-            p.ChangeDutyCycle(2.5)  # turn towards 0 degree
+            p.ChangeDutyCycle(7.5)  # turn towards 0 degree
+            time.sleep(1) # sleep 1 second
+            p.ChangeDutyCycle(2.5)
         except KeyboardInterrupt:
             p.stop()
             GPIO.cleanup()
-    else if(mode=="CLOSED"):
+    elif(mode=="CLOSE"):
+        p = GPIO.PWM(40, 50)
+        p.start(2.5)
+        print("motor")
         try:
-            p.ChangeDutyCycle(7.5) # turn towards 90 degree
-            time.sleep(1) # sleep 1 second 
-            p.stop()
+            p.ChangeDutyCycle(2.5)  # turn towards 0 degree
+            time.sleep(1) # sleep 1 second
+            p.ChangeDutyCycle(7.5)
         except KeyboardInterrupt:
             p.stop()
             GPIO.cleanup()
@@ -96,8 +102,7 @@ def detectMotion(pirPin):
     while True:
         i=GPIO.input(pirPin)
         if i==0 and flag==1:                 #When output from motion sensor is LOW
-            GPIO.output(motionLED, 0)                #Turn OFF LED
-            operateMotor(40)
+            GPIO.output(motionLED, 0)
             return "motionstopped"
         elif i==1:                           #When output from motion sensor is HIGH
             print("Intruder detected",i)
@@ -105,9 +110,9 @@ def detectMotion(pirPin):
             GPIO.output(motionLED, 1)        #Turn ON LED
         time.sleep(1)
 
-x = detectMotion(37)
-if(x=="motionstopped"):
-    setGridResident(residentRowPins, residentColPins)
-    setGridVisitor(visitorRowPins, visitorColPins)
-    slot = "R12"  #row column
-    showPathVisitor(slot, visitorRowPins, visitorColPins)
+#x = detectMotion(37)
+#if(x=="motionstopped"):
+ #   setGridResident(residentRowPins, residentColPins)
+  #  setGridVisitor(visitorRowPins, visitorColPins)
+   # slot = "R12"  #row column
+    #showPathVisitor(slot, visitorRowPins, visitorColPins)
