@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-
-=======
-{% extends "layout.html" %}
-{%block style %}
+{% extends "layout.html" %} {%block style %}
 <title>Resident Home</title>
 <style>
   .headings {
@@ -43,19 +39,21 @@
       YOUR VEHICLES:
     </div>
     <div>
->>>>>>> 8b359bb5ff5defb2b7c4e0ee24c5b14b0566db92
       {%if visitorCount > 0 %}
-      <div>
-        YOUR VEHICLES
-      </div>
       <div>
         <!-- prettier-ignore -->
         {% for i in range(vehicleCount) %}
         <div class="col-sm-6 col-md-3">
           <div class="card mb-3">
             <div class="card-content">
-              <p><span style="color: greenyellow;">Vehicle Number : </span>{{vehicles[i]["VehicleNo"]}} </p>
-              <p><span style="color: greenyellow;">Alloted Slot : </span>{{vehicles[i]["AllottedSlot"]}}</p>
+              <p>
+                <span style="color: greenyellow;">Vehicle Number : </span
+                >{{vehicles[i]["VehicleNo"]}}
+              </p>
+              <p>
+                <span style="color: greenyellow;">Alloted Slot : </span
+                >{{vehicles[i]["AllottedSlot"]}}
+              </p>
             </div>
           </div>
         </div>
@@ -66,7 +64,10 @@
         <div class="col-sm-6 col-md-3">
           <div class="card mb-3">
             <div class="card-content">
-              <p>YOU DO NOT HAVE ANY REGISTERED VEHICLES. CONTACT ADMIN TO REGISTER.</p>
+              <p>
+                YOU DO NOT HAVE ANY REGISTERED VEHICLES. CONTACT ADMIN TO
+                REGISTER.
+              </p>
             </div>
           </div>
         </div>
@@ -74,7 +75,7 @@
       {% endif %}
     </div>
   </div>
-  <br>
+  <br />
 
   <div class="Visitors">
     <div class="headings">
@@ -86,15 +87,20 @@
       <div class="col-sm=-6 col-md-4">
         <div class="card mb-3">
           <div class="card-content">
-            <p><span style="color: greenyellow;">Visitor Name :</span> {{visitorVehicles[i]["Name"]}}</p>
-            <p><span style="color: greenyellow;">Vehicle Number :</span> {{visitorVehicles[i]["VehicleNo"]}}</p>
+            <p>
+              <span style="color: greenyellow;">Visitor Name :</span>
+              {{visitorVehicles[i]["Name"]}}
+            </p>
+            <p>
+              <span style="color: greenyellow;">Vehicle Number :</span>
+              {{visitorVehicles[i]["VehicleNo"]}}
+            </p>
           </div>
         </div>
       </div>
       {% endfor %}
     </div>
-    <div class="clear" style="clear:both; height: 5px;">
-    </div>
+    <div class="clear" style="clear:both; height: 5px;"></div>
     {% else %}
     <div class="row">
       <div class="col m4">
@@ -109,81 +115,94 @@
     {% endif %}
     <div style="margin-left: 25%;">
       <!-- Trigger the modal with a button -->
-      <button type="button" class="buttonModal" class="btn btn-info btn-lg" data-toggle="modal"
-        data-target="#myModal">ADD VISITOR</button>
+      <button
+        type="button"
+        class="buttonModal"
+        class="btn btn-info btn-lg"
+        data-toggle="modal"
+        data-target="#myModal"
+      >
+        ADD VISITOR
+      </button>
     </div>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal">
       <div class="modal-dialog">
-
         <!-- Modal content-->
         <div class="modal-content">
           <div class="modal-header">
             <h4>ADD VISITOR</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
           </div>
           <div class="modal-body">
             <div class="AddVisitor">
-              {%set addAction = "/Resident/" + id + "/AddVisitor" %}
+              {%set addAction = "/Resident/Visitor" %}
               <form method="POST">
                 <label for="Name">Visitor Name:</label>
                 <input type="text" name="Name" id="AddName" />
                 <br />
                 <label for="VehicleNo">Vehicle Number</label>
-                <input type="text" name="VehicleNo" id="AddVehicleNo" required /><br>
+                <input
+                  type="text"
+                  name="VehicleNo"
+                  id="AddVehicleNo"
+                  required
+                /><br />
                 <input id="AddVisitor" type="button" value="Add Visitor" />
               </form>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- Trigger the modal with a button -->
-    <button style="left: 60%; width: 200px;" type="button" class="buttonModal" class="btn btn-info btn-lg"
-      data-toggle="modal" data-target="#myModal1">DELETE
-      VISITOR</button>
+    <button
+      style="left: 60%; width: 200px;"
+      type="button"
+      class="buttonModal"
+      class="btn btn-info btn-lg"
+      data-toggle="modal"
+      data-target="#myModal1"
+    >
+      DELETE VISITOR
+    </button>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal1" role="dialog">
       <div class="modal-dialog">
-
         <!-- Modal content-->
         <div class="modal-content">
           <div class="modal-header">
             <h4>DELETE VISITOR</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
           </div>
           <div class="modal-body">
             <div class="DeleteVisitor">
-              {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
+              {%set deleteAction = "/Resident/Visitor" %}
               <form method="POST">
                 <label for="VehicleNo">Vehicle Number</label>
-                <input type="text" name="VehicleNo" id="DelVehicleNo" required /><br>
-                <input id="DeleteVisitor" type="button" value="Delete Visitor" />
+                <input
+                  type="text"
+                  name="VehicleNo"
+                  id="DelVehicleNo"
+                  required
+                /><br />
+                <input
+                  id="DeleteVisitor"
+                  type="button"
+                  value="Delete Visitor"
+                />
               </form>
             </div>
           </div>
         </div>
-
       </div>
-    </div>
-
-
-
-  </div>
-  </div>
-
-    <div class="DeleteVisitor">
-      DELETE VISITOR <br />
-      {%set deleteAction = "/Resident/" + id + "/DeleteVisitor" %}
-      <form>
-        <label for="VehicleNo">Vehicle Number</label>
-        <input type="text" name="VehicleNo" id="DelVehicleNo" required />
-        <input id="DeleteVisitor" type="button" value="Delete Visitor" />
-      </form>
     </div>
 
     <script>
@@ -206,7 +225,7 @@
           data: JSON.stringify(data),
           success: function(result) {
             console.log(result);
-            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+            var reloadURL = "/Resident";
             window.location.href = reloadURL;
           }
         });
@@ -230,11 +249,12 @@
           data: JSON.stringify(data),
           success: function(result) {
             console.log(result);
-            var reloadURL = "/Resident/" + "{{id | safe}}" + "/home";
+            var reloadURL = "/Resident";
             window.location.href = reloadURL;
           }
         });
       });
     </script>
-  </body>
-</html>
+    {% endblock %}
+  </div>
+</body>

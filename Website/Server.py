@@ -30,41 +30,60 @@ def index():
     return "Hello World"
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/Login", methods=["GET", "POST"])
 def login():
-    if not request.json or not "Username" in request.json or not "Password" in request.json:
-        abort(400)
-    username = request.json["Username"]
-    password = request.json["Password"]
-    user = dbRef.chils("Residents").order_by_child(
-        "FlatNo").equal_to(username).get()
-    try:
-        passwordCheck = user[0].val()["Password"]
-        if password == passwordCheck:
+    if request.method == "GET":
+        return render_template("Login.html", login="nil")
+    elif request.method == "POST":
+        if not request.json or not "Username" in request.json or not "Password" in request.json:
+            abort(400)
+        username = request.json["Username"]
+        password = request.json["Password"]
+        if username == "Admin" and password == "MyPassword":
             session["LoggedIn"] = True
             session["User"] = username
-            return jsonify({"Login": "Successful"})
-        else:
-            return jsonify({"Login": "no"})
-    except:
-        return jsonify({"Login": "no"})
+            return jsonify({
+                "Login": "Successful",
+                "Redirect": "/Admin/Residents"
+            })
+        user = dbRef.child("Residents").order_by_child(
+            "FlatNo").equal_to(username).get()
+        try:
+            passwordCheck = user[0].val()["Password"]
+            if password == passwordCheck:
+                session["LoggedIn"] = True
+                session["User"] = username
+                return jsonify({
+                    "Login": "Successful",
+                    "Redirect": "/Resident"
+                })
+            else:
+                return jsonify({"Login": "Failed"})
+        except IndexError:
+            return jsonify({"Login": "Failed"})
+    else:
+        abort(404)
 
 # Change id to string
-@app.route("/Resident/<int:id>/Profile", methods=["GET"])
-def getResident(id):
+@app.route("/Resident/Profile", methods=["GET"])
+def profile():
+    if not session.get("LoggedIn") or session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
+
+    id = session.get("User")
     residentDetails = dbRef.child("Residents").order_by_child(
         "FlatNo").equal_to(id).get()
-    # This query returns a single resident if present.
-    for resident in residentDetails:
-        return render_template("ResidentProfile.html", details=resident.val(), id=str(id))
-        # return jsonify({"Resident": resident.val()})
-    # Else throw 404 error
-    abort(404)
+
+    details = residentDetails[0].val()
+    return render_template("ResidentProfile.html", details=details)
 
 
-@app.route("/Resident/<string:id>/home", methods=["GET"])
-def home(id):
-    # id = str(id)
+@app.route("/Resident/", methods=["GET"])
+def home():
+    if not session.get("LoggedIn") or session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
+
+    id = session.get("User")
     # Get vehicle details
     vehicles = []
     vehicleDetails = dbRef.child("ResidentVehicles").order_by_child(
@@ -89,54 +108,52 @@ def home(id):
         visitorCount=len(visitors),
         id=id
     )
-    # return jsonify({
-    #     "Vehicles": vehicles,
-    #     "VehicleCount": len(vehicles),
-    #     "Visitors": visitors,
-    #     "VisitorCount": len(visitors)})
 
 
-@app.route("/Resident/<string:id>/AddVisitor", methods=["POST"])
-def addVisitor(id):
-    if not request.json or not "VehicleNo" in request.json:
-        abort(400)
-    visitor = {
-        "AllottedSlot": "",
-        "Arrived": False,
-        "Departed": False,
-        "FlatNo": id,
-        "Name": request.json.get("Name", ""),
-        "VehicleNo": request.json["VehicleNo"]
-    }
+@app.route("/Resident/Visitor", methods=["POST", "DELETE"])
+def visitorFunctions():
+    if not session.get("LoggedIn") or session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
 
-    visitorID = IDgen.getNextVisitorID()
-    dbRef.child("Visitors").child(visitorID).set(visitor)
-    # Add a success message
-    return jsonify({"Success": True}, 201)
+    id = session.get("User")
+    if request.method == "POST":
+        if not request.json or not "VehicleNo" in request.json:
+            abort(400)
+        visitor = {
+            "AllottedSlot": "",
+            "Arrived": False,
+            "Departed": False,
+            "FlatNo": id,
+            "Name": request.json.get("Name", ""),
+            "VehicleNo": request.json["VehicleNo"]
+        }
+
+        visitorID = IDgen.getNextVisitorID()
+        dbRef.child("Visitors").child(visitorID).set(visitor)
+        return jsonify({"Success": True})
+
+    if request.method == "DELETE":
+        if not request.json or not "VehicleNo" in request.json:
+            abort(400)
+        vehicleNo = request.json["VehicleNo"]
+        details = dbRef.child("Visitors").order_by_child(
+            "VehicleNo").equal_to(vehicleNo).get()
+        for x in details:
+            visitorID = x.key()
+            flatNo = x.val()["FlatNo"]
+            break
+        if flatNo == id:
+            dbRef.child("Visitors").child(visitorID).remove()
+            return jsonify({"Success": True})
+            # send back 200
+        return jsonify({"Success": False, "Message": "Invalid Vehicle Number"})
 
 
-@app.route("/Resident/<string:id>/DeleteVisitor", methods=["DELETE"])
-def deleteVisitor(id):
-    if not request.json or not "VehicleNo" in request.json:
-        abort(400)
-    vehicleNo = request.json["VehicleNo"]
-    details = dbRef.child("Visitors").order_by_child(
-        "VehicleNo").equal_to(vehicleNo).get()
-    for x in details:
-        visitorID = x.key()
-        flatNo = x.val()["FlatNo"]
-        break
-    if flatNo == id:
-        dbRef.child("Visitors").child(visitorID).remove()
-        return jsonify({"Success": True}, 201)
-        # send back 200
-    return jsonify({"Success": False, "Message": "Invalid Vehicle Number"}, 201)
-
-# Change id to string
-@app.route("/Resident/<int:id>/ChangePassword", methods=["PUT"])
-# ADD ENCRYPTION
-# Method must be PATCH
-def changePassword(id):
+@app.route("/Resident/ChangePassword", methods=["PATCH"])
+def changePassword():
+    if not session.get("LoggedIn") or session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
+    id = session.get("User")
     if not request.json or not "CurrentPassword" in request.json or not "NewPassword" in request.json:
         abort(400)
     # Hash later
@@ -150,13 +167,15 @@ def changePassword(id):
         break
     if password == currentPassword:
         dbRef.child("Residents").child(ID).update({"Password": newPassword})
-        return jsonify({"Success": True}, 201)
+        return jsonify({"Success": True, "Message": "Password change successful!"})
     else:
-        return jsonify({"Success": False, "Message": "Password you entered is wrong"}, 201)
+        return jsonify({"Success": False, "Message": "Current Password you entered is wrong"})
 
 
 @app.route("/Admin/Residents", methods=["GET", "PUT", "DELETE", "POST"])
 def residentFuctions():
+    if not session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
     if request.method == "GET":
         residents = dbRef.child("Residents").get()
         details = [resident.val()
@@ -226,6 +245,8 @@ def residentFuctions():
 
 @app.route("/Admin/ResidentVehicles", methods=["GET", "DELETE", "POST"])
 def residentVehicleFuctions():
+    if not session.get("User") == "Admin":
+        return render_template("Login.html", login="nil")
     if request.method == "GET":
         vehicles = dbRef.child(
             "ResidentVehicles").get()
@@ -298,4 +319,5 @@ def residentVehicleFuctions():
 
 
 if __name__ == '__main__':
+    app.secret_key = "SecretKEY"
     app.run(debug=True)

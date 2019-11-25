@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <body>
+      <form>
+        {% set action = "/Login" %}
+        <label>Enter Flat Number</label>
+        <input type="text" id="Username" />
+        <label>Enter Password</label>
+        <input type="password" id="Password" />
+        <input type="button" id="Login" value="Login" />
+      </form>
+    </body>
+    <script>
+      $("#Login").on("click", event => {
+        let action = "{{action | safe}}";
+        let data = {
+          Username: $("#Username").val(),
+          Password: $("#Password").val()
+        };
+        // console.log(data);
+        $.ajax({
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          url: action,
+          type: "POST",
+          dataType: "json",
+          data: JSON.stringify(data),
+          success: result => {
+            if (result["Login"] == "Failed") {
+              window.location.href = "/Login?Message=LoginFailed";
+            } else {
+              window.location.href = result["Redirect"];
+            }
+          }
+        });
+      });
+    </script>
+  </head>
+</html>
