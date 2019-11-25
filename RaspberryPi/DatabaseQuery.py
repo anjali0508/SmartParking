@@ -63,6 +63,21 @@ def verifyAndAllotVisitor(licensePlateNumber):
         return (True, allottedSlot)
     return (False, "")
 
+def deleteVisitor(licensePlateNumber):
+    details = dbRef.child("Visitors").order_by_child("VehicleNo").equal_to(licensePlateNumber).get()
+    try:
+        key = details[0].key()
+        slot = details[0].val()["AllottedSlot"]
+        dbRef.child("Visitors").child(key).remove()
+        freeSlot(slot)
+    except IndexError:
+        pass
+
+def freeSlot(slot):
+    slotDetails = dbRef.child("ParkingSlots").order_by_child("SlotNo").equal_to(slot).get()
+    key = slotDetails[0].key()
+    updateInfo = {"Allotted" : False}
+    dbRef.child("ParkingSlots").child(key).update(updateInfo)
 
 if __name__ == "__main__":
     print(verifyResident("KA09A1111"))
@@ -71,3 +86,6 @@ if __name__ == "__main__":
     # print(verifyAndAllotVisitor(("KA05P9999")))
     # print(verifyAndAllotVisitor(("KA09A2222")))
     # print(verifyAndAllotVisitor(("KA09A2212")))
+    # print(getFreeVisitorSlot())
+    # freeSlot("V22")
+    # deleteVisitor("lol")
