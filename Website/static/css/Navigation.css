@@ -63,7 +63,7 @@ form label {
   margin-top: 10px;
 }
 
-.card {
+.login-card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   width: 25%;
   margin: auto;
@@ -72,6 +72,42 @@ form label {
   justify-content: center;
 }
 
+.profile-card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  width: 35%;
+  margin: auto;
+  margin-top: 50px;
+  padding: 70px;
+  font-size: 20px;
+}
+
+.profile-card .card-body {
+  margin-top: 20px;
+}
+
+.resident-deck {
+  margin-top: 20px;
+  justify-content: center;
+  display: flex;
+}
+
+.resident-deck .card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  margin: 20px;
+}
+
+.resident-deck .card-title {
+  font-size: 25px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.resident-deck .card-text {
+  font-size: 17px;
+  font-weight: 500;
+}
 /* .card input[type="text"],
 .card input[type="password"] {
   width: 80%;

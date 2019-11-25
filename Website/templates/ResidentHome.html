@@ -1,260 +1,175 @@
-{% extends "layout.html" %} {%block style %}
-<title>Resident Home</title>
-<style>
-  .headings {
-    text-align: center;
-    margin: auto;
-    font-size: 27px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    font-weight: bold;
-  }
+{% extends "Navigation_Residents.html" %} {% block content %}
+<div class="container">
+  <div class="title">
+    YOUR VEHICLES
+  </div>
 
-  .buttonModal {
-    position: absolute;
-    background-color: #233142;
-    border: none;
-    border-radius: 4px;
-    color: #ccc;
-    font-size: 1.5rem;
-  }
-
-  .buttonModal {
-    display: block;
-    width: 200px;
-    height: 40px;
-    cursor: pointer;
-    transition: box-shadow 0.1s linear;
-  }
-
-  .buttonModal:hover {
-    box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
-  }
-</style>
-{% endblock style%}
-
-<body>
-  {% block content %}
-  <div class="Vehicles">
-    <div class="headings">
-      YOUR VEHICLES:
-    </div>
-    <div>
-      {%if visitorCount > 0 %}
-      <div>
-        <!-- prettier-ignore -->
-        {% for i in range(vehicleCount) %}
-        <div class="col-sm-6 col-md-3">
-          <div class="card mb-3">
-            <div class="card-content">
-              <p>
-                <span style="color: greenyellow;">Vehicle Number : </span
-                >{{vehicles[i]["VehicleNo"]}}
-              </p>
-              <p>
-                <span style="color: greenyellow;">Alloted Slot : </span
-                >{{vehicles[i]["AllottedSlot"]}}
-              </p>
-            </div>
+  <div class="container-fluid">
+    <div class="resident-deck row">
+      {% if vehicleCount > 0 %} {% for i in range(vehicleCount) %}
+      <div class="card col-sm-3 text-center">
+        <div class="card-body">
+          <div class="card-title">
+            VEHICLE {{i + 1}}
+          </div>
+          <div class="card-text">
+            Vehicle Number: {{vehicles[i]["VehicleNo"]}} <br />
+            Allotted Slot: {{vehicles[i]["AllottedSlot"]}}
           </div>
         </div>
-        {% endfor %}
       </div>
-      {% else %}
-      <div class="row">
-        <div class="col-sm-6 col-md-3">
-          <div class="card mb-3">
-            <div class="card-content">
-              <p>
-                YOU DO NOT HAVE ANY REGISTERED VEHICLES. CONTACT ADMIN TO
-                REGISTER.
-              </p>
-            </div>
-          </div>
+      {% endfor %} {% else %}
+      <div class="card col-sm-4 text-center">
+        <div class="card-text">
+          You have not registered any vehicles. <br />
+          Please contact Admin to register.
         </div>
       </div>
       {% endif %}
     </div>
   </div>
-  <br />
+</div>
 
-  <div class="Visitors">
-    <div class="headings">
-      VISITORS:
-    </div>
-    {%if visitorCount > 0 %}
-    <div class="row" style="padding: 1%;">
-      {% for i in range(visitorCount) %}
-      <div class="col-sm=-6 col-md-4">
-        <div class="card mb-3">
-          <div class="card-content">
-            <p>
-              <span style="color: greenyellow;">Visitor Name :</span>
-              {{visitorVehicles[i]["Name"]}}
-            </p>
-            <p>
-              <span style="color: greenyellow;">Vehicle Number :</span>
-              {{visitorVehicles[i]["VehicleNo"]}}
-            </p>
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="clear" style="clear:both; height: 5px;"></div>
-    {% else %}
-    <div class="row">
-      <div class="col m4">
-        <div class="card">
-          <div class="card-content">
-            <p>YOU ARE NOT EXPECTING ANY VISITORS AT PRESENT</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="clear" style="clear:both; height: 5px;"></div>
-    {% endif %}
-    <div style="margin-left: 25%;">
-      <!-- Trigger the modal with a button -->
-      <button
-        type="button"
-        class="buttonModal"
-        class="btn btn-info btn-lg"
-        data-toggle="modal"
-        data-target="#myModal"
-      >
-        ADD VISITOR
-      </button>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal">
-      <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4>ADD VISITOR</h4>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="AddVisitor">
-              {%set addAction = "/Resident/Visitor" %}
-              <form method="POST">
-                <label for="Name">Visitor Name:</label>
-                <input type="text" name="Name" id="AddName" />
-                <br />
-                <label for="VehicleNo">Vehicle Number</label>
-                <input
-                  type="text"
-                  name="VehicleNo"
-                  id="AddVehicleNo"
-                  required
-                /><br />
-                <input id="AddVisitor" type="button" value="Add Visitor" />
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Trigger the modal with a button -->
-    <button
-      style="left: 60%; width: 200px;"
-      type="button"
-      class="buttonModal"
-      class="btn btn-info btn-lg"
-      data-toggle="modal"
-      data-target="#myModal1"
-    >
-      DELETE VISITOR
-    </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="myModal1" role="dialog">
-      <div class="modal-dialog">
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4>DELETE VISITOR</h4>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="DeleteVisitor">
-              {%set deleteAction = "/Resident/Visitor" %}
-              <form method="POST">
-                <label for="VehicleNo">Vehicle Number</label>
-                <input
-                  type="text"
-                  name="VehicleNo"
-                  id="DelVehicleNo"
-                  required
-                /><br />
-                <input
-                  id="DeleteVisitor"
-                  type="button"
-                  value="Delete Visitor"
-                />
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      // Ajax call to add visitor
-      $("#AddVisitor").on("click", function(event) {
-        var action = "{{addAction | safe}}"; // use the jinja variable action
-        var data = {
-          Name: $("#AddName").val(),
-          VehicleNo: $("#AddVehicleNo").val()
-        };
-
-        $.ajax({
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          url: action,
-          type: "POST",
-          dataType: "json",
-          data: JSON.stringify(data),
-          success: function(result) {
-            console.log(result);
-            var reloadURL = "/Resident";
-            window.location.href = reloadURL;
-          }
-        });
-      });
-
-      // Ajax call to delete visitor
-      $("#DeleteVisitor").on("click", function(event) {
-        var action = "{{deleteAction | safe}}"; // use the jinja variable action
-        var data = {
-          VehicleNo: $("#DelVehicleNo").val()
-        };
-        console.log(JSON.stringify(data));
-        $.ajax({
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          url: action,
-          type: "DELETE",
-          dataType: "json",
-          data: JSON.stringify(data),
-          success: function(result) {
-            console.log(result);
-            var reloadURL = "/Resident";
-            window.location.href = reloadURL;
-          }
-        });
-      });
-    </script>
-    {% endblock %}
+<div class="container">
+  <div class="title">
+    VISITORS
   </div>
-</body>
+  <div class="container-fluid">
+    <div class="resident-deck row">
+      {% if visitorCount > 0 %} {% for i in range(visitorCount) %}
+      <div class="card col-sm-3 text-center">
+        <div class="card-body">
+          <div class="card-title">
+            VISITOR {{i + 1}}
+          </div>
+          <div class="card-text">
+            Vehicle Number: {{visitorVehicles[i]["VehicleNo"]}} <br />
+            Name: {{visitorVehicles[i]["Name"]}}
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <div class="card col-sm-4 text-center">
+        <div class="card-text">
+          You are not expecting any visitors
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="formButtons container-fluid">
+  <button data-toggle="modal" data-target="#AddModal">ADD VISITOR</button>
+  <button data-toggle="modal" data-target="#DeleteModal">
+    DELETE VISITOR
+  </button>
+</div>
+
+<div id="AddModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal">
+          &times;
+        </button>
+        <h4 class="modal-title">ADD VISITOR</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          {%set action = "/Resident/Visitor" %}
+          <label>Visitor's Name</label>
+          <input type="text" id="Name" class="form-control" />
+          <label>Vehicle Number</label>
+          <input type="text" id="VehicleNo" class="form-control" required />
+          <input
+            id="AddVisitor"
+            type="button"
+            class="btn btn-default"
+            value="Add Visitor"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="DeleteModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button class="close" data-dismiss="modal">
+          &times;
+        </button>
+        <h4 class="modal-title">DELETE VISITOR</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          {%set action = "/Resident/Visitor" %}
+          <label>Visitor's Name</label>
+          <input type="text" id="Name" class="form-control" />
+          <label>Vehicle Number</label>
+          <input type="text" id="VehicleNo_del" class="form-control" required />
+          <input
+            id="DeleteVisitor"
+            type="button"
+            class="btn btn-default"
+            value="Delete Visitor"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ajax call to add visitor
+  $("#AddVisitor").on("click", function(event) {
+    var action = "{{action | safe}}"; // use the jinja variable action
+    var data = {
+      Name: $("#Name").val(),
+      VehicleNo: $("#VehicleNo").val()
+    };
+
+    $.ajax({
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      url: action,
+      type: "POST",
+      dataType: "json",
+      data: JSON.stringify(data),
+      success: function(result) {
+        console.log(result);
+        var reloadURL = "/Resident";
+        window.location.href = reloadURL;
+      }
+    });
+  });
+
+  // Ajax call to delete visitor
+  $("#DeleteVisitor").on("click", function(event) {
+    var action = "{{action | safe}}"; // use the jinja variable action
+    var data = {
+      VehicleNo: $("#VehicleNo_del").val()
+    };
+    console.log(JSON.stringify(data));
+    $.ajax({
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      url: action,
+      type: "DELETE",
+      dataType: "json",
+      data: JSON.stringify(data),
+      success: function(result) {
+        console.log(result);
+        var reloadURL = "/Resident";
+        window.location.href = reloadURL;
+      }
+    });
+  });
+</script>
+{% endblock %}
