@@ -1,35 +1,29 @@
 import cv2
-
 import RPi.GPIO as GPIO
 import time
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
-
 import DatabaseQuery as db
 import PlateRecognizer as lpr
 import PiFunctions as pi
 
-# Import GPIO library
-# Set up GPIO pins
 
+# GPIO.setwarnings(False)
+# GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
+# Set up GPIO pins
 residentRowPins = [3, 5]
 residentColPins = [7, 11, 13]
-
 visitorRowPins = [36,32]
 visitorColPins = [31,33,35]
-
 for pin in visitorRowPins:
     GPIO.setup(pin, GPIO.OUT)
 for pin in visitorColPins:
     GPIO.setup(pin, GPIO.OUT)
-
 for pin in residentRowPins:
     GPIO.setup(pin, GPIO.OUT)
 for pin in residentColPins:
     GPIO.setup(pin, GPIO.OUT)
     
-pi.setGridResident(residentRowPins, residentColPins)
-pi.setGridVisitor(visitorRowPins, visitorColPins)
+pi.setLEDGrid(residentRowPins, residentColPins)
+pi.setLEDGrid(visitorRowPins, visitorColPins)
     
 accessAllowedLED = 16
 accessDeniedLED = 8
@@ -40,15 +34,16 @@ cameraPin = 18
 slot=""
 
 imageName = "Images/car7.jpg"# Image names
+entryMotionFlag = False
+exitMotionFlag = False
+accessDenied = False
 
-while True:
-    accessDenied = False
-    motion = pi.detectMotion(entryPirPin)
-    if motion == "motionstopped":
+while True: 
+    # Entry gate 
+    motion, entryMotionFlag = pi.detectMotion(entryPirPin)
+    if motion == True:
         accessDenied = True
         pi.operateLED(cameraPin)
-
-        # Load an image from memory and get plate number
         plateNumber = lpr.extractLPN(imageName)
         print(plateNumber)
         # Verify from database
@@ -59,13 +54,12 @@ while True:
             pi.operateLED(accessAllowedLED)
             pi.operateMotor(motorPin, "OPEN")
             # Guide to the slot
-            pi.showPathResident(slot, residentRowPins, residentColPins)
+            pi.showPath(slot, residentRowPins, residentColPins)
             time.sleep(5)
             pi.operateMotor(motorPin, "CLOSE")
-            print("done")
-            pi.setGridResident(residentRowPins, residentColPins)
+            pi.setLEDGrid(residentRowPins, residentColPins) # Reset LED grid
 
-        # If not verify visitor
+        # Verify visitor
         else:
             verified, slot = db.verifyAndAllotVisitor(plateNumber)
             if verified == True and slot != "":
@@ -73,22 +67,17 @@ while True:
                 pi.operateLED(accessAllowedLED) 
                 pi.operateMotor(motorPin, "OPEN")
                 pi.showPathVisitor(slot, visitorRowPins, visitorColPins)
-            # Guide to the slot
-            # ..
-            # ..
-                time.sleep(2)
+                time.sleep(5)
                 pi.operateMotor(motorPin, "CLOSE")
-                pi.setGridVisitor(visitorRowPins, visitorColPins)
-            
+                pi.setLEDGrid(visitorRowPins, visitorColPins) # Reset LED grid
 
         if accessDenied == True:
             pi.operateLED(accessDeniedLED)
     
-    motion = pi.detectMotion(exitPirPin)
-    if motion == "motionstopped":
-        print("exit")
+    # Exit gate
+    motion, exitMotionFlag = pi.detectMotion(exitPirPin)
+    if motion == True:
         plateNumber = lpr.extractLPN(imageName)
-        print(plateNumber)
         db.deleteVisitor(plateNumber)
         
 
