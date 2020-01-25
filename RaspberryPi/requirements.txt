@@ -1,2 +1,7 @@
-// pyrebase (Version with a fix - https://github.com/nhorvath/Pyrebase4/tree/master/pyrebase )
-
+# https://github.com/nhorvath/Pyrebase4/tree/master/pyrebase
+# Install pyrebase from the link  provided above
+# pyrebase==4.0.0 
+opencv-python>=3.4
+pytesseract>=0.3
+pillow>=2.0.0
+picamera[array]
