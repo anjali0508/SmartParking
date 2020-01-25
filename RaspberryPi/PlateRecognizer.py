@@ -70,8 +70,9 @@ def getLPNumber(text):
             return text
     return False
 
-def extractLPN(imageName):   
-    original = cv2.imread(imageName)
+def extractLPN(image):   
+    original = image
+    # original = cv2.imread(imageName)
     # original = cv2.resize(original, (620, 480))
     preprocessed = preprocesing(original)
     suitableContours = getSuitableContours(preprocessed, original)

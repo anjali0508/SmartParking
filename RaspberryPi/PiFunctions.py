@@ -1,7 +1,14 @@
 import RPi.GPIO as GPIO
+from picamera import PiCamera
+from picamera.array import PiRGBArray
 import time
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
+
+# Initialize camera 
+camera = PiCamera()
+camera.resolution = (640, 480)
+cameraStream = PiRGBArray(camera)
 
 def operateLED(LEDPin):
     GPIO.setup(LEDPin, GPIO.OUT)    
@@ -63,3 +70,8 @@ def detectMotion(pirPin, motionFlag):
         print("Motion detected")
         motionFlag = True
     return False, motionFlag
+
+def getImage():
+    camera.capture(cameraStream, format="bgr")
+    image = cameraStream.array
+    return image

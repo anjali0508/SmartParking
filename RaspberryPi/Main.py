@@ -33,7 +33,6 @@ motorPin = 40
 cameraPin = 18
 slot=""
 
-imageName = "Images/car7.jpg"# Image names
 entryMotionFlag = False
 exitMotionFlag = False
 accessDenied = False
@@ -43,8 +42,8 @@ while True:
     motion, entryMotionFlag = pi.detectMotion(entryPirPin)
     if motion == True:
         accessDenied = True
-        pi.operateLED(cameraPin)
-        plateNumber = lpr.extractLPN(imageName)
+        image = pi.getImage()
+        plateNumber = lpr.extractLPN(image)
         print(plateNumber)
         # Verify from database
         # Verify resident
